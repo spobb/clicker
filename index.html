@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Clicker</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+
+	<body>
+		<main>
+			<div class="container">
+				<span id="button" draggable="false"><img src="cookie.png" alt="cookie" class="cookie" draggable="false" /></span>
+				<span id="cookieDisplay" class="cookie-display">Cookies: 0</span>
+				<span id="CPS" class="cookie-display cps">CPS: 0</span>
+			</div>
+			<nav class="buildings" id="buildings">
+				<h1>Buildings</h1>
+				<div class="building">
+					<span>clicker</span>
+					<span class="counter">0</span>
+					<div class="buy"><span id="clickerprice" class="price">10 cookies </span><button id="clicker">Buy</button></div>
+				</div>
+				<div class="building">
+					<span>turbo clicker</span>
+					<span class="counter">0</span>
+					<div class="buy"><span id="turboclickerprice" class="price">100 cookies </span><button id="turboClicker">Buy</button></div>
+				</div>
+				<div class="building">
+					<span>mes couilles</span>
+					<span class="counter">0</span>
+					<div class="buy"><span id="ballsprice" class="price">5000 cookies </span><button id="balls">Buy</button></div>
+				</div>
+				<div class="building">
+					<span>portal</span>
+					<span class="counter">0</span>
+					<div class="buy"><span id="portalprice" class="price">1000000 cookies </span><button id="portal">Buy</button></div>
+				</div>
+			</nav>
+		</main>
+		<script type="module" src="main.js"></script>
+		<script type="module" src="building.js"></script>
+	</body>
+</html>

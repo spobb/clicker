@@ -1,0 +1,76 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #444;
+    color: white;
+    font-family: monospace;
+    text-shadow: 5px 5px 10px #0009;
+}
+main {
+    height: 100dvh;
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+}
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column nowrap;
+    gap: 1rem;
+    height: 100%;
+}
+.building {
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    border-top: #0002 1px solid;
+    padding-top: 1rem;
+    & > *:first-child {
+        grid-column: span 2;
+    }
+    & .buy {
+        margin-left: auto;
+        grid-column: span 2;
+    }
+}
+.buildings {
+    display: flex;
+    flex-flow: column nowrap;
+    padding: 2rem;
+    gap: 1rem;
+    border-left: 1px solid #0002;
+}
+.floatingtext {
+    position: fixed;
+    pointer-events: none;
+    font-size: 1.5rem;
+}
+.cookie {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
+    max-width: 20rem;
+    max-height: 20rem;
+    scale: 1;
+    margin: 5rem;
+    transition: scale 50ms;
+}
+.cookie-display {
+    text-align: left;
+    width: 30rem;
+    font-size: 2rem;
+}
+.cookie-display.cps {
+    font-size: 1.2rem;
+}
+.clicked {
+    scale: .9;
+    transition: scale 50ms;
+}
+@keyframes particle {
+    to {
+        opacity: 0;
+        transform: translateY(-100px);
+    }
+}
