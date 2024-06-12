@@ -16,12 +16,13 @@ const cookieDisplay = document.getElementById('cookieDisplay');
 const CPS = document.getElementById('CPS');
 
 const buildingsWrapper = document.getElementById('buildings');
+const upgradesWrapper = document.getElementById('upgrades');
 
 function formatNum(num) {
 	num = num.toExponential();
 	let s = num.slice(0, num.indexOf('+') - 1);
 	let magnitude = parseInt(num.slice(num.indexOf('+') + 1));
-	return (s * (10 ** (magnitude % 3))).toFixed(num > 999 ? 3 : 0).replace(/[.]/g, ',') + ' ' + numFormats[magnitude];
+	return (s * (10 ** (magnitude % 3))).toFixed(magnitude % 3 ? 0 : 1).replace(/[.]/g, ',') + ' ' + numFormats[magnitude];
 }
 
 button.addEventListener('mousedown', e => {
@@ -31,17 +32,6 @@ button.addEventListener('mousedown', e => {
 	addEventListener('mouseup', () => {
 		cookie.classList.remove('clicked');
 	});
-});
-
-document.querySelector('.upgrade').addEventListener('click', () => {
-	if (Game.cookies >= upgrades['a1'].price) {
-		// remove cost from total
-		Game.cookies -= upgrades['a1'].price;
-
-		// update info
-		upgrades['a1'].buy();
-		upgrades['a1'].applyEffect();
-	}
 });
 
 // create each building
@@ -88,6 +78,44 @@ for (const [key, building] of Object.entries(buildings)) {
 		}
 	});
 }
+
+// create each upgrade
+
+for (const [key, upgrade] of Object.entries(upgrades)) {
+	// create html
+	const elemCont = document.createElement('span');
+	elemCont.classList.add('upgrade', 'clickable');
+	elemCont.dataset.is = key;
+	elemCont.innerText = upgrade.name;
+
+	const elemBuyDiv = document.createElement('div');
+	elemBuyDiv.classList.add('buy');
+
+	const elemPrice = document.createElement('span');
+	elemPrice.classList.add('price');
+	elemPrice.innerText = `${formatNum(upgrade.price)} cookies `;
+
+	elemBuyDiv.appendChild(elemPrice);
+	elemCont.append(elemBuyDiv);
+
+	upgradesWrapper.appendChild(elemCont);
+
+	// event listener on each building
+
+	elemCont.addEventListener('click', () => {
+		if (Game.cookies >= upgrade.price && !upgrade.isBought) {
+			Game.cookies -= upgrade.price;
+
+			Game.baseClickValue = Game.clickValue;
+
+			upgrade.buy();
+			upgrade.applyEffect();
+
+			upgradesWrapper.removeChild(elemCont);
+		}
+	});
+}
+
 
 function updateCookies() {
 	let produced = 0;
