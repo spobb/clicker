@@ -1,10 +1,12 @@
-import {Building} from './building.js';
-import {Upgrade} from './upgrade.js';
-import {FloatText} from './floattext.js';
+import { Game } from './game.js';
+import { Cheats } from './modules/cheats.js';
 
-let cookies = 0;
-let clickValue = 1;
-let perTick = 0;
+import { Building } from './modules/building.js';
+import { Upgrade, ClickPercent, ClickMultiple } from './modules/upgrade.js';
+import { FloatText } from './modules/floattext.js';
+import { numFormats } from './modules/nums.js';
+import { upgrades } from './modules/upgrades.js';
+import { buildings } from './buildings.js';
 
 let particles = [];
 
@@ -13,45 +15,32 @@ const cookie = document.querySelector('.cookie');
 const cookieDisplay = document.getElementById('cookieDisplay');
 const CPS = document.getElementById('CPS');
 
-const buildingButtons = Array.from(document.querySelectorAll('.building'));
 const buildingsWrapper = document.getElementById('buildings');
 
+function formatNum(num) {
+	num = num.toExponential();
+	let s = num.slice(0, num.indexOf('+') - 1);
+	let magnitude = parseInt(num.slice(num.indexOf('+') + 1));
+	return (s * (10 ** (magnitude % 3))).toFixed(num > 999 ? 3 : 0).replace(/[.]/g, ',') + ' ' + numFormats[magnitude];
+}
+
 button.addEventListener('mousedown', e => {
-	cookies += clickValue;
-	cookieDisplay.innerText = `Cookies: ${formatNum(Math.floor((cookies * 1000) / 1000).toFixed(0))}`;
-	new FloatText(e.clientX, e.clientY, 2000, `+${clickValue}`, particles);
+	Game.cookies += Game.clickValue;
+	new FloatText(e.clientX, e.clientY, 2000, `+${Game.clickValue}`, particles);
 	cookie.classList.add('clicked');
 	addEventListener('mouseup', () => {
 		cookie.classList.remove('clicked');
 	});
 });
 
-document.getElementById('give').addEventListener('click', () => {
-	cookies = 999999999;
-});
-
-// create buildings
-let buildings = {
-	clicker: new Building(15, 0.1, 'Clicker'),
-	turbo: new Building(100, 1, 'Turbo Clicker'),
-	balls: new Building(1100, 8, 'Mes couilles'),
-	portal: new Building(12000, 47, 'Portal'),
-	sweatshop: new Building(130000, 260, 'Chinese Sweatshop'),
-	bank: new Building(1400000, 1400, 'Bank'),
-	temple: new Building(20000000, 7800, 'Temple'),
-};
-
-let clickerup = new Upgrade(5, 1, 'cool upgrade');
-
 document.querySelector('.upgrade').addEventListener('click', () => {
-	if (cookies >= clickerup.price) {
+	if (Game.cookies >= upgrades['a1'].price) {
 		// remove cost from total
-		cookies -= clickerup.price;
+		Game.cookies -= upgrades['a1'].price;
 
 		// update info
-		clickerup.buy();
-		clickValue += Math.round(((perTick * 20) / 100) * clickerup.effect);
-		console.log(Math.round(((perTick * 20) / 100) * clickerup.effect));
+		upgrades['a1'].buy();
+		upgrades['a1'].applyEffect();
 	}
 });
 
@@ -67,7 +56,7 @@ for (const [key, building] of Object.entries(buildings)) {
 	elemName.innerText = building.name;
 
 	const elemCounter = document.createElement('span');
-	elemCounter.innerText = `${formatNum(building.count)} `;
+	elemCounter.innerText = building.count;
 
 	const elemBuyDiv = document.createElement('div');
 	elemBuyDiv.classList.add('buy');
@@ -85,16 +74,16 @@ for (const [key, building] of Object.entries(buildings)) {
 
 	elemCont.addEventListener('click', () => {
 		// check if player has enough cookies
-		if (cookies >= building.price) {
+		if (Game.cookies >= building.price) {
 			// remove cost from total
-			cookies -= building.price;
+			Game.cookies -= building.price;
 
 			// update info
 			building.updatePrice();
 			building.updateCount();
 
 			// update html
-			elemCounter.innerText = `${formatNum(building.count)} `;
+			elemCounter.innerText = building.count;
 			elemPrice.innerText = `${formatNum(building.price)} cookies `;
 		}
 	});
@@ -105,16 +94,17 @@ function updateCookies() {
 	for (const [_, building] of Object.entries(buildings)) {
 		produced += building.produce();
 	}
-	perTick = produced * 10;
-	cookies += perTick;
-	cookies = Math.round(cookies * 1000) / 1000;
-	cookieDisplay.innerText = `Cookies: ${formatNum(Math.floor((cookies * 1000) / 1000).toFixed(0))}`;
-	CPS.innerText = `CPS: ${Math.floor(perTick * 1000) / 50}`;
-}
+	for (const [_, upgrade] of Object.entries(upgrades)) {
+		if (upgrade.isBought) { upgrade.applyEffect(); }
+	}
+	Game.perTick = produced;
+	Game.cookies += Game.perTick;
+	Game.cookies = Math.round(Game.cookies * 1000) / 1000;
+	Game.clickValue = Math.round(Game.clickValue * 1000) / 1000;
 
-function formatNum(num) {
-	// return Intl.NumberFormat('en', {notation: 'compact'}).format(num);
-	return num;
+	cookieDisplay.innerText = `Cookies: ${formatNum(Game.cookies)}`;
+	CPS.innerText = `CPS: ${formatNum(Game.perTick * 20)}`;
+
 }
 
 // game loop

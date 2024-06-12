@@ -1,3 +1,5 @@
+import { Game } from "../game.js";
+
 export class Building {
 	constructor(price, production, name) {
 		this._name = name;
@@ -6,6 +8,7 @@ export class Building {
 		this._production = production / 20;
 		this._count = 0;
 	}
+
 	get name() {
 		return this._name;
 	}
@@ -20,6 +23,7 @@ export class Building {
 	}
 	updateCount() {
 		++this._count;
+		++Game.buildingCount;
 	}
 	produce() {
 		return this._production * this._count;
