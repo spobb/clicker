@@ -24,39 +24,67 @@ button.addEventListener('mousedown', e => {
 	});
 });
 
+document.getElementById('give').addEventListener('click', () => {
+	cookies = 999999999;
+});
+
 // create buildings
+let clicker = new Clicker(10, 0.01, 'Clicker');
+let turbo = new TurboClicker(100, 0.05, 'Turbo Clicker');
+let balls = new Balls(5000, 6, 'Mes couilles');
+let portal = new Portal(10000000, 1000, 'Portal');
 
 buildingButtons.forEach(button => {
 	button.addEventListener('click', e => {
 		switch (e.target.id) {
 			case 'clicker':
-				let clicker = new Clicker(10, 0.01, 'Clicker', buildings);
-				e.target.parentNode.childNodes[0].innerText = `${clicker.price} cookies `;
-				e.target.parentNode.parentNode.childNodes[3].innerText = `${clicker.count} `;
+				if (cookies >= clicker.price) {
+					// remove cost from total
+					cookies -= clicker.price;
+
+					// push to array with all buildings
+					buildings.push(clicker);
+
+					// update info
+					clicker.updatePrice();
+					clicker.updateCount();
+
+					// update html
+					e.target.parentNode.childNodes[0].innerText = `${formatNum(clicker.price)} cookies `;
+					e.target.parentNode.parentNode.childNodes[3].innerText = `${formatNum(clicker.count)} `;
+				}
 				break;
 		}
 		switch (e.target.id) {
 			case 'turboClicker':
-				let turbo = new TurboClicker(100, 0.05, 'Turbo Clicker', buildings);
-				e.target.parentNode.childNodes[0].innerText = `${turbo.price} cookies `;
-				e.target.parentNode.parentNode.childNodes[3].innerText = `${turbo.count} `;
+				if (cookies >= turbo.price) {
+					// remove cost from total
+					cookies -= turbo.price;
 
+					// push to array with all buildings
+					buildings.push(turbo);
+
+					// update info
+					turbo.updatePrice();
+					turbo.updateCount();
+
+					// update html
+					e.target.parentNode.childNodes[0].innerText = `${formatNum(turbo.price)} cookies `;
+					e.target.parentNode.parentNode.childNodes[3].innerText = `${formatNum(turbo.count)} `;
+				}
 				break;
 		}
 		switch (e.target.id) {
 			case 'balls':
-				let balls = new Balls(5000, 6, 'Mes couilles', buildings);
-				e.target.parentNode.childNodes[0].innerText = `${balls.price} cookies `;
-				e.target.parentNode.parentNode.childNodes[3].innerText = `${balls.count} `;
+				e.target.parentNode.childNodes[0].innerText = `${formatNum(balls.price)} cookies `;
+				e.target.parentNode.parentNode.childNodes[3].innerText = `${formatNum(balls.count)} `;
 
 				break;
 		}
 		switch (e.target.id) {
 			case 'portal':
-				let portal = new Portal(100000, 1000, 'Portal', buildings);
-				e.target.parentNode.childNodes[0].innerText = `${portal.price} cookies `;
-				e.target.parentNode.parentNode.childNodes[3].innerText = `${portal.count} `;
-
+				e.target.parentNode.childNodes[0].innerText = `${formatNum(portal.price)} cookies `;
+				e.target.parentNode.parentNode.childNodes[3].innerText = `${formatNum(portal.count)} `;
 				break;
 		}
 	});
@@ -70,19 +98,19 @@ function updateCookies() {
 	perTick = produced;
 	cookies += perTick;
 	cookies = Math.round(cookies * 100) / 100;
-	cookieDisplay.innerText = `Cookies: ${Math.floor(cookies)}`;
+	cookieDisplay.innerText = `Cookies: ${formatNum(Math.floor(cookies))}`;
 	CPS.innerText = `CPS: ${Math.round(perTick * 100) / 5}`;
+}
+
+function formatNum(num) {
+	return Intl.NumberFormat('en', {notation: 'compact'}).format(num);
 }
 
 // game loop
 
-function update() {
-	updateCookies();
-}
-
 function loop() {
 	setTimeout(function () {
-		update();
+		updateCookies();
 		requestAnimationFrame(loop);
 	}, 1000 / 20);
 }
