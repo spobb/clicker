@@ -1,4 +1,4 @@
-import { Building } from "./modules/building.js";
+import { Building } from "./building.js";
 
 export let buildings = {
     clicker: new Building(15, 0.1, 'Clicker'),
